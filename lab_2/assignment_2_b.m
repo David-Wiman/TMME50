@@ -1,0 +1,39 @@
+% Set variables
+run('T33_Shooting_Star_parameters.m');
+
+% Create a Laplace variable
+s = tf('s'); 
+
+% Constants for the transfere functions
+b1 = Mdelta_e + Mw_dot*Zdelta_e;
+b0 = Mw*Zdelta_e - Mdelta_e*Zw;
+d1 = Zdelta_e;
+d0 = -Mq*Zdelta_e + v*Mdelta_e;
+omega = sqrt(Zw*Mq - Mw*v);
+zeta = -(Mq + Mw_dot*v + Zw) / (2*omega);
+l = 0.0; % Limit at 0.9
+
+% Transfere function from elevator deflection to q
+Gq = (b1*s + b0) / (s^2 + 2*zeta*omega*s + omega^2);
+
+% Tansfere function from elevator deflection to w
+Gw = (d1*s + d0) / (s^2 + 2*zeta*omega*s + omega^2);
+
+% Tansfere function from elevator deflection to az
+Gaz = minreal(s*Gw - v*Gq - l*s*Gq);
+
+% Plot
+figure(1)
+step(Gq, 10);
+title('Step response for \Delta q')
+grid;
+
+figure(2)
+step(Gaz, 10);
+title('Step response for \Delta a_z')
+grid;
+
+figure(3)
+step(Gq, 100);
+title('Long step response for \Delta q')
+grid;
